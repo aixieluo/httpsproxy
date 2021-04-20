@@ -36,6 +36,8 @@ func Serve(listenAdress string){
 			switch {
 			case strings.HasSuffix(hostname, "mobage.jp"):
 				fallthrough
+			case strings.HasSuffix(hostname, "mbga.jp"):
+				fallthrough
 			case strings.HasSuffix(hostname, "gree.net"):
 				fallthrough
 			case strings.HasSuffix(hostname, "granbluefantasy.jp"):
