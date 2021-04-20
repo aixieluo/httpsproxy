@@ -12,6 +12,7 @@ import (
 	"math/big"
 	"net/http"
 	"os"
+	"strings"
 	"time"
 )
 
@@ -27,7 +28,27 @@ func Serve(listenAdress string){
 		Addr: listenAdress,
 		TLSConfig: 	&tls.Config{Certificates: []tls.Certificate{cert},},
 		Handler: http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-			proxy.Serve(w, r)
+			u := r.URL
+			if u.Host == "" {
+				u.Host = r.Host
+			}
+			hostname := u.Hostname()
+			switch {
+			case strings.HasSuffix(hostname, "mobage.jp"):
+				fallthrough
+			case strings.HasSuffix(hostname, "gree.net"):
+				fallthrough
+			case strings.HasSuffix(hostname, "granbluefantasy.jp"):
+				fallthrough
+			case strings.HasSuffix(hostname, "203.104.248.14"):
+				proxy.Serve(w, r)
+			default:
+				w.WriteHeader(403)
+				_, err := w.Write([]byte("Host not Allowed\r\n"))
+				if err != nil {
+					log.Fatal(err)
+				}
+			}
 		}),
 	}
 
